@@ -12,7 +12,13 @@ import time
 import qpy
 import sys
 import time
-droid = androidhelper.Android()
+# androidhelper qpython 用这个
+#droid = androidhelper.Android()
+import android #aidlearning和sla4用这个
+droid = android.Android()
+import json
+import sys
+import time
 
 ##
 msg = "欢迎光临"
@@ -104,10 +110,15 @@ droid.cameraStartPreview(100,80,picdir)
 time.sleep(1)
 droid.cameraStopPreview()
 """
-##获得摄像头，并且把图像变为一个MJPEG服务器
-#address = droid.webcamStart(100,80,0).result
-#time.sleep(1)
-#print(address)
+#开始推流，webcamStart参数1、表示分辨率水平，数字越大，分辨率越大，数字6表示640x480的分辨率；参数2是jpeg压缩质量百分比，参数3表示推流的端口号，参数4表示对第几个摄像进行推流
+#droid.webcamStart(6,20,1001,1)
+#推流的时间
+
+#time.sleep(30)
+#停止推流，不停止会无限推流
+#droid.webcamStop()
+#拍摄图像
+
 
 #电池
 """
