@@ -7,9 +7,9 @@ __author__ = 'liuli <lukeliuli@163.com>'
 __copyright__ = 'Copyright (c) 2021, csust.'
 __license__ = 'Apache License, Version 2.0'
 
-import androidhelper
+#import androidhelper
 import time
-import qpy
+#import qpy
 import sys
 import time
 # androidhelper qpython 用这个
