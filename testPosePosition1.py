@@ -48,7 +48,7 @@ azimuth = []
 pitch = []
 rtime = []
 initTime =0
-while counter<50*10:
+while counter<100*10:
     
     s1 = droid.readSensors().result
     
@@ -113,7 +113,7 @@ print("azimuthDiff %.3f,%.3f" %(azimuthDiffAvg,azimuthDiffStd))
 print("yfDiff %.3f,%.3f" %(yfDiffAvg,yfDiffStd))
 print("yf %.3f,%.3f" %(yfAvg,yfStd))
 
-exit(0)
+
 #scipy 积分 http://liao.cpython.org/scipy18/
 #https://docs.scipy.org/doc/scipy/reference/tutorial/integrate.html
 #https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.integrate.simps.html
@@ -153,13 +153,14 @@ xv4 = []
 #2. pitch 仰俯：绕X轴转动的角度 (-180<=pitch<=180), 如果设备水平放置，前方向下俯就是正，如图
 #3. roll 滚转：绕Y轴转动(-90<=roll<=90)，向左翻滚是正值
 counter = 0
-vel0y = 0
+
 dt = 0.01
 print("start")
 while counter<100000:
-   
+    #stt = time.clock()
     s1 = droid.readSensors().result
     
+    #print(s1)
     xf.append(s1["xforce"])
     yf.append(s1["yforce"])
     zf.append(s1["zforce"])
@@ -167,57 +168,63 @@ while counter<100000:
     azimuth.append(math.degrees(s1["azimuth"]))
     pitch.append(math.degrees(s1["pitch"]))
     if counter == 0:
-       initTime = s1["time"]
+        initTime = s1["time"]
     #initTime = 0
     rtime.append(s1["time"] - initTime)
 
 
     counter=counter+1
-    if counter%100==99 and len(yf)>100:
+    if counter%100==1 and len(yf)>10:
         #print(len(yf))
         #print(len(rtime))
         ##滤波
-        conv_size = 100
-        yf1 = np.convolve(yf,np.ones(conv_size),'same')/conv_size
-        
+        #conv_size = 10
+        #yf1 = np.convolve(yf,np.ones(conv_size),'same')/conv_size
+       
         #print(yf1.shape)
-        for ii in range(len(yf1)-1):
-            veloY[ii]= velY0+ yf1[ii]*dt+ (yf1[ii+1]-yf1[ii])*dt/2
-            velocityx[1]= vel0+ yf1[ii]*dt+ (yf1[ii+1]-yf1[ii])*dt/2
-
-        yv3 = integrate.cumtrapz(yf1,rtime,initial=0)
-
-        for i in range(len(yf1)-1):
-           if abs(pitch[i]-pitch[i+1])<0.25:
-                yv3[i]=0
-                yf1[i]=0
-                yv3[i+1]=0
-                yf1[i+1]=0
+        acc = yf
+        veloY = np.zeros(len(yf))
+        posY = np.zeros(len(yf))
         
 
-        #yv4 = np.trapz(yv3)*0.01
-        #yv4 = integrate.simps(yv3,rtime)
-        yv4 = integrate.cumtrapz(yv3,rtime)
-        print("------------------")
-        print(yf1[-1])
-        print(yv3[-1])
-        print(yv4)
-    
-        #yv4 = np.trapz(yv3)*0.01
-        #print(yv4)
-        #yv4 = integrate.cumtrapz(yv3,rtime)
-        #print(yv4[-1])
+        rollDiff = [roll[i+1]-roll[i] for i in range(len(roll)-1)]
+        pitchDiff = [pitch[i+1]-pitch[i] for i in range(len(pitch)-1)]
+        azimuthDiff = [azimuth[i+1]-azimuth[i] for i in range(len(azimuth)-1)]
+       
+        #完全失败  
+        cnt2 = 0
+        for ii in range(1,len(acc)):
 
-        #yv3 = integrate.simps(yf,rtime)
-        #print(yv3)
-        #yv4 = integrate.simps(yv3,dx=0.01)
+            if abs(azimuthDiff[ii-1] -azimuthDiffAvg)<3*azimuthDiffStd or abs(rollDiff[ii-1] -rollDiffAvg)<3*rollDiffStd or abs(pitchDiff[ii-1] -pitchDiffAvg)<3*pitchDiffStd:
+                cnt2=cnt2+1
+            else:
+                cnt2 = 0
+
+            if cnt2>30:
+                veloY[ii] = 0
+                acc[ii] = 0
+                posY[ii] = posY[ii-1]+veloY[ii-1]*dt
+            else:
+                veloY[ii]= veloY[ii-1]+acc[ii-1]*dt
+                posY[ii] = posY[ii-1]+veloY[ii-1]*dt
+                
+               
+               
+
+
+
 
         
-        
-      
+        print(posY[-1])
+        print(veloY[-1])
+        print(acc[-1])
+        print(counter)
+        print("------------------")  
+    #edt = time.clock()
+    #print(edt-stt)
      
     
-    time.sleep(0.01)
+    time.sleep(dt)
 
 droid.stopSensing()
 
