@@ -11,8 +11,7 @@ import json
 import sys
 import time
 from cvs import *
-import cv2
-import cv2 as cv
+#import cv2 as cv
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -41,7 +40,7 @@ cvs.imshow(img)#显示图片
 """
 #https://docs.opencv.org/4.5.2/df/d9d/tutorial_py_colorspaces.html
 #读取苹果图像，显示苹果大小，红色
-strTmp = "/home/githubcodes/phoneDev/hfs1.jpg"
+strTmp = "/home/phoneDev/hfs1.jpg"
 im1 = cvs.imread(strTmp)
 #cvs.imshow(im1)
 
@@ -151,24 +150,25 @@ for i in range(n):
     bgdModel = np.zeros((1,65),np.float64)
     fgdModel = np.zeros((1,65),np.float64)
     mask3[mask3 == 255] = 1
-    mask4, bgdModel, fgdModel = cv.grabCut(im1,mask3,None,bgdModel,fgdModel,5,cv.GC_INIT_WITH_MASK)
+    mask4, bgdModel, fgdModel = cv2.grabCut(im1,mask3,None,bgdModel,fgdModel,5,cv2.GC_INIT_WITH_MASK)
     mask4[mask3 == 1] = 255
-    #cvs.imshow(mask4,"1")
+    cvs.imshow(mask4,"1")
     
 
     #https://docs.opencv.org/3.4.14/dc/df6/tutorial_py_histogram_backprojection.html
+    """
     hist=cv2.calcHist([hsv1],[0], mask3, [180], [0,180])
-    cv.normalize(hist,hist,0,255,cv.NORM_MINMAX)
-    dst = cv.calcBackProject([hsv1],[0],hist,[0,180],1)
-    #disc = cv.getStructuringElement(cv.MORPH_ELLIPSE,(5,5))
-    #cv.filter2D(dst,-1,disc,dst)
-    ret,thresh = cv.threshold(dst,50,255,0)
-    disc = cv.getStructuringElement(cv.MORPH_ELLIPSE,(3,3))
+    cv2.normalize(hist,hist,0,255,cv2.NORM_MINMAX)
+    dst = cv2.calcBackProject([hsv1],[0],hist,[0,180],1)
+    #disc = cv2.getStructuringElement(cv.MORPH_ELLIPSE,(5,5))
+    #cv2.filter2D(dst,-1,disc,dst)
+    ret,thresh = cv2.threshold(dst,50,255,0)
+    disc = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
     opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, disc)
-    disc = cv.getStructuringElement(cv.MORPH_ELLIPSE,(15,15))
+    disc = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(15,15))
     closing = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, disc)
     cvs.imshow(closing,"1")
-
+    """  
 
     #多个苹果分割，采用距离变换+watershed
     #https://docs.opencv.org/3.4.14/d3/db4/tutorial_py_watershed.html

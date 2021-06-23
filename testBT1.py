@@ -59,3 +59,5 @@ while True: #receives a message
   print('Rcv Msg :'+message)  
 
 droid.exit()
+import apkneed
+import apkneed

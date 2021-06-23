@@ -52,3 +52,4 @@ while True:
   message = droid.bluetoothReadLine(connID).result
   print('Rcv Msg:'+message)  
 droid.exit()
+import apkneed
