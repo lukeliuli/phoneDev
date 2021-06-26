@@ -232,7 +232,7 @@ class untitled(App):
 
 def process():
     
-    img2 = cvs.imread("anxi.jpg")
+    img2 = cvs.imread("./res/anxi.jpg")
     global runFlag
     cap=cvs.VideoCapture(0)
     counter = 0

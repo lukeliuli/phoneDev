@@ -3,7 +3,7 @@ import numpy as np
 import os,sys
 
 def checkAppleImage():
-    strTmp = "hfs1.jpg"
+    strTmp = "./res/hfs1.jpg"
     im1 = cvs.imread(strTmp)
 
     cvs.setLbs("长沙理工大学测控专业"+"苹果检测B116队"+"显示苹果原始图像")
