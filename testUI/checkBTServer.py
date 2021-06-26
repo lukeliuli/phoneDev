@@ -1,10 +1,12 @@
-import androidhelper,sys
+#import androidhelper,sys
+import android,sys
+
 import time
 from cvs import *
 
-def checkBTServer()
+def checkBTServer():
     #担心蓝牙socket被上一个程序锁了
-    droid = androidhelper.Android()
+    droid = android.Android()
     droid.bluetoothStop()
     droid.toggleBluetoothState(False)
     sleep(100)

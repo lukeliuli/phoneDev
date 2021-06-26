@@ -6,9 +6,13 @@ from remi.gui import *
 from cvs import *
 from checkAppleImage import *
 from checkBTServer import *
+from random import randint
 stopFlag = False
 global runFlag
 runFlag = 1
+global gInfo
+gInfo = "空"
+
 class untitled(App):
     def __init__(self, *args, **kwargs):
         #DON'T MAKE CHANGES HERE, THIS METHOD GETS OVERWRITTEN WHEN SAVING IN THE EDITOR
@@ -18,6 +22,8 @@ class untitled(App):
     def idle(self):
         #idle function called every update cycle
         self.aidcam.update()
+        global gInfo
+        self.info.text = gInfo
         pass
     
     def main(self):
@@ -169,36 +175,53 @@ class untitled(App):
     
     def onclick_checkOpencv1(self, emitter):
         self.info.text = "检查Opencv固定图像读取10次"
-        print("检查Opencv固定图像读取")
+        print("检查Opencv固定图像读取10次")
+        global gInfo
+        gInfo = "检查Opencv固定图像读取10次"
+        
         global runFlag
         runFlag = 2
         pass
 
     def onclick_checkOpencv2(self, emitter):
         self.info.text = "检查Opencv视频10秒"
-        print("检查Opencv视频")
+        print("检查Opencv视频10秒")
+        global gInfo
+        gInfo = "检查Opencv视频10秒"
         global runFlag
         runFlag = 1
         pass
 
     def onclick_checkBluetooth(self, emitter):
         self.info.text = "检测蓝牙串口"
+        global gInfo
+        gInfo = "检测蓝牙串口"
+        
         checkBTServer()
         pass
 
     def onclick_checkUSBOTG(self, emitter):
         self.info.text = "检测USBOTG串口"
+        global gInfo
+        gInfo = "检测USBOTG串口"
         pass
 
     def onclick_runOpencvBlue(self, emitter):
         self.info.text = "运行苹果糖度检测1"
+        global gInfo
+        gInfo = "运行苹果糖度检测1"
+        global runFlag
+        runFlag = 3
+        
         pass
 
     def onclick_cancel(self, emitter):
         self.info.text = "直接点窗体上的退出按钮，有利于系统释放资源"
+        global gInfo
+        gInfo = "直接点窗体上的退出按钮，有利于系统释放资源"
         print("3秒后退出")
         global runFlag
-        runFlag = 3
+        runFlag = 101
         
         pass
 
@@ -211,7 +234,7 @@ def process():
     
     img2 = cvs.imread("anxi.jpg")
     global runFlag
-    cap=cvs.VideoCapture(1)
+    cap=cvs.VideoCapture(0)
     counter = 0
     while stopFlag is False:
         if runFlag == 1:
@@ -237,6 +260,37 @@ def process():
             if counter==0:
                   runFlag = 1
                   print("苹果检测10次到了")
+        
+        elif runFlag == 3:
+            img =cap.read()
+            if img is None :
+                continue
+            cvs.imshow(img)
+            tmp = randint(1,10000)
+            
+            strTmp = str(tmp)+"capture"+".jpg"
+            cv2.imwrite(strTmp,img)
+            
+            imContour,redMask,appleMask,appleInfo=analyzeAppleImage(img)
+            
+            strTmp = str(tmp)+"imContour"+".jpg"
+            cv2.imwrite(strTmp,imContour)
+            
+            strTmp = str(tmp)+"redMask"+".jpg"
+            cv2.imwrite(strTmp,redMask)
+            
+            strTmp = str(tmp)+"appleMask"+".jpg"
+            cv2.imwrite(strTmp,appleMask)
+            print(appleInfo)
+            global gInfo
+            gInfo = appleInfo
+            sleep(1000)
+            
+            counter = counter+1
+            counter = counter%5
+            if counter==0:
+                  runFlag = 1
+                  print("检测5次，每次1秒")
             
             
         else:
