@@ -6,7 +6,6 @@ droid = androidhelper.Android()
 droid.bluetoothStop()
 droid.toggleBluetoothState(False)
 
-
 droid.toggleBluetoothState(True)
 locAddr = droid.bluetoothGetLocalAddress()
 locName = droid.bluetoothGetLocalName()
@@ -52,4 +51,4 @@ while True:
   message = droid.bluetoothReadLine(connID).result
   print('Rcv Msg:'+message)  
 droid.exit()
-import apkneed
+
